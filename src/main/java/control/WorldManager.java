@@ -18,7 +18,7 @@ public class WorldManager {
     private static double angleSpeed = 30.0;
 
     public static String[] availableKeys = {"left", "right", "up", "down", "page up", "page down", "home", "end",
-            "insert", "delete", "-", "+"};
+            "insert", "delete", "minus", "plus"};
 
     public WorldManager() {
         this.keyPressed = new HashMap<String, Boolean>();
@@ -33,6 +33,7 @@ public class WorldManager {
     public void addCube(Cube cube) {
         this.cubes.add(cube);
     }
+    public List<Cube> getCubes(){return this.cubes;}
 
     public void update() {
         double timeNew = System.currentTimeMillis() / 1000.0;
@@ -45,8 +46,8 @@ public class WorldManager {
         if (this.keyPressed.get("down")) movedy -= moveSpeed;
         if (this.keyPressed.get("up")) movedy += moveSpeed;
         double movedz = 0.0;
-        if (this.keyPressed.get("-")) movedz -= moveSpeed;
-        if (this.keyPressed.get("+")) movedz += moveSpeed;
+        if (this.keyPressed.get("minus")) movedz -= moveSpeed;
+        if (this.keyPressed.get("plus")) movedz += moveSpeed;
         //rotate
         double rotatedx = 0.0;
         if (this.keyPressed.get("home")) rotatedx += angleSpeed;
@@ -59,7 +60,7 @@ public class WorldManager {
         if (this.keyPressed.get("page up")) rotatedz -= angleSpeed;
 
         for (Cube cube : cubes) {
-            Vector3 translateSpeed = new Vector3(movedx, movedy, movedz+0.1);
+            Vector3 translateSpeed = new Vector3(movedx, movedy, movedz*1.0);
             translateSpeed.multiply(timeDiff);
             cube.move(translateSpeed);
             Vector3 rotateSpeed = new Vector3(rotatedx, rotatedy, rotatedz);

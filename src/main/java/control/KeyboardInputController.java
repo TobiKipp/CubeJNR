@@ -9,11 +9,9 @@ import model.Vector3;
  * Created by Tobias Kipp on 2014-10-24.
  */
 public class KeyboardInputController implements KeyListener {
-    private Cube cube;
     private WorldManager worldManager;
 
-    public KeyboardInputController(Cube cube, WorldManager worldManager) {
-        this.cube = cube;
+    public KeyboardInputController(WorldManager worldManager) {
         this.worldManager = worldManager;
     }
 
@@ -41,9 +39,9 @@ public class KeyboardInputController implements KeyListener {
         } else if (keycode == KeyEvent.VK_DELETE) {
             this.worldManager.keyPressed("delete");
         } else if (keycode == KeyEvent.VK_PLUS) {
-            this.worldManager.keyPressed("+");
+            this.worldManager.keyPressed("plus");
         } else if (keycode == KeyEvent.VK_MINUS) {
-            this.worldManager.keyPressed("-");
+            this.worldManager.keyPressed("minus");
         }
         
     }
@@ -72,9 +70,9 @@ public class KeyboardInputController implements KeyListener {
         } else if (keycode == KeyEvent.VK_DELETE) {
             this.worldManager.keyReleased("delete");
         } else if (keycode == KeyEvent.VK_PLUS) {
-            this.worldManager.keyReleased("+");
+            this.worldManager.keyReleased("plus");
         } else if (keycode == KeyEvent.VK_MINUS) {
-            this.worldManager.keyReleased("-");
+            this.worldManager.keyReleased("minus");
         }
     }
 

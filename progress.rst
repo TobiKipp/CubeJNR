@@ -119,4 +119,9 @@ With the changes to act on time difference and state of the keys everything is w
 hardware. An example for the limit of the hardware (keyboard):
 If two of the arrow keys are pressed one of the remaining arrow keys is still working, while the other is not.
 
+The one thing that is currently a bit strange is the z-axis movement. The item should get larger or smaller, but instead
+the visible parts get smaller. It seems I will need a camera control next.
 
+I will have to go through an OpenGL tutorial to get how the "camera" is set up correctly.
+The "camera" means I have no idea what to call it. The symptoms are
+the square not having equal length, the cube is not moving.

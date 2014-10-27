@@ -1,5 +1,6 @@
 package view;
 
+import control.WorldManager;
 import model.Cube;
 import model.Vector3;
 
@@ -93,6 +94,12 @@ public class DrawHelper {
             gl2.glEnd();
         }
         gl2.glPopMatrix();
+    }
+
+    public void draw(WorldManager worldManager){
+        for(Cube cube: worldManager.getCubes()){
+            this.draw(cube);
+        }
     }
 
 }

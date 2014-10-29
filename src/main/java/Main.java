@@ -32,7 +32,7 @@ public class Main implements GLEventListener {
         worldManager = new WorldManager();
         Cube cube = new Cube(new Vector3(1.0, 1.0, 1.0), new Vector3(1.0, 1.0, 1.0), "white");
         worldManager.addCube(cube);
-        cube = new Cube(new Vector3(0.0, 0.0, 0.0), new Vector3(100.0, -1.0, 100.0), "white");
+        cube = new Cube(new Vector3(0.0, -1.0, -50.0), new Vector3(100.0, 1.0, 100.0), "white");
         worldManager.addLevelCube(cube);
         // Get the default OpenGL profile, reflecting the best for your running platform
         GLProfile glp = GLProfile.getDefault();

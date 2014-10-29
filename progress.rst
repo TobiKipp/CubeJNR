@@ -137,4 +137,25 @@ Adding a floor and gravity
 As next step a floor will be added that the cube will be able to move on. This will need the intersection method already
 defined. For this the velocity will be added to the cube instead of having it in the WorldManager.
 
+There is an issue with the angle I am looking from. It prevents from telling if the intersection is correct or not.
+Now is the moment to correctly set up the camera. There are some issues I will have to check some things first.
+OpenGL favors the right handed coordinate system. In it x goes to the right, y goes up and z comes out of the monitor.
+In the DrawHelper class the drawing has rotated these axis. Considering this the one plane that should be parallel to
+the monitor plane should be the one numbered 6. While in the test phase it should be colored magenta.
+
+For the cube representing the player it is magenta. For the level object it did not. It was due to the
+negative sizes. There is one issue with my intersection algorithm. It only intersects if the position is in the other
+cube. It seems I got things mixed upped.
+
+A surefire cubes intersection check is check for containment of all 8 vertices of this cube other cube and any one
+vertex of the other cube in this cube. The check I implemented was one usable for lines.
+As a first step I will add a test that has to fail with the current implementation. Already for 0,0,1 the test fails,
+which is as expected for now.
+
+I will check for each point to be in the cube and leave early if it is found. If it can not be proven that the cubes
+intersect this way the last rule applies that if any arbitrary point of this cube is in the other cube they intersect.
+
+After the fix the tests are running fine and in the running program it works as expected for the surface of the
+worldCube. To fully test the functionality the camera angle has to be altered. This is for the next session.
+
 

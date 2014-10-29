@@ -46,20 +46,20 @@ public class DrawHelper {
      * @param cube The cube to draw
      */
     public void draw(Cube cube) {
-        Vector3[] edges = new Vector3[8];
+        Vector3[] edges = cube.getVertices();
 
         Vector3 start = cube.getPosition();
         Vector3 size = cube.getSize();
-        for (int i = 0; i < 8; i++) {
-            edges[i] = start.copy();
-        }
-        edges[1].add(new Vector3(size.getX(), 0.0, 0.0));
-        edges[2].add(new Vector3(0.0, 0.0, size.getZ()));
-        edges[3].add(new Vector3(size.getX(), 0.0, size.getZ()));
-        edges[4].add(new Vector3(0.0, size.getY(), 0.0));
-        edges[5].add(new Vector3(size.getX(), size.getY(), 0.0));
-        edges[6].add(new Vector3(0.0, size.getY(), size.getZ()));
-        edges[7].add(new Vector3(size.getX(), size.getY(), size.getZ()));
+        //for (int i = 0; i < 8; i++) {
+        //    edges[i] = start.copy();
+        //}
+        //edges[1].add(new Vector3(size.getX(), 0.0, 0.0));
+        //edges[2].add(new Vector3(0.0, 0.0, size.getZ()));
+        //edges[3].add(new Vector3(size.getX(), 0.0, size.getZ()));
+        //edges[4].add(new Vector3(0.0, size.getY(), 0.0));
+        //edges[5].add(new Vector3(size.getX(), size.getY(), 0.0));
+        //edges[6].add(new Vector3(0.0, size.getY(), size.getZ()));
+        //edges[7].add(new Vector3(size.getX(), size.getY(), size.getZ()));
         int[][] planes = new int[][]{{0, 1, 3, 2}, {1, 3, 7, 5}, {5, 4, 6, 7}, {4, 0, 2, 6}, {4, 5, 1, 0}, {2, 3, 7, 6}};
 
         gl2.glPushMatrix();

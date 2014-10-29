@@ -125,3 +125,16 @@ the visible parts get smaller. It seems I will need a camera control next.
 I will have to go through an OpenGL tutorial to get how the "camera" is set up correctly.
 The "camera" means I have no idea what to call it. The symptoms are
 the square not having equal length, the cube is not moving.
+
+The "camera" is set in two steps first the GL_PROJECTION matrix sets
+up the perspective. In the GL_MODELVIEW Matrix the camera is position
+with gluLookAt. I am not fully satisfied with the camera as it seems to look as if was on a sphere, but
+For getting things running it is enough.
+
+Adding a floor and gravity
+==========================
+
+As next step a floor will be added that the cube will be able to move on. This will need the intersection method already
+defined. For this the velocity will be added to the cube instead of having it in the WorldManager.
+
+

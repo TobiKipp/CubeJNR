@@ -32,8 +32,8 @@ public class Main implements GLEventListener {
         worldManager = new WorldManager();
         Cube cube = new Cube(new Vector3(1.0, 1.0, 1.0), new Vector3(1.0, 1.0, 1.0), "white");
         worldManager.addCube(cube);
-        cube = new Cube(new Vector3(2.0, 6.0, -5.0), new Vector3(1.0, 1.0, 1.0), "white");
-        worldManager.addCube(cube);
+        cube = new Cube(new Vector3(0.0, 0.0, 0.0), new Vector3(100.0, -1.0, 100.0), "white");
+        worldManager.addLevelCube(cube);
         // Get the default OpenGL profile, reflecting the best for your running platform
         GLProfile glp = GLProfile.getDefault();
         // Specifies a set of OpenGL capabilities, based on your profile.
@@ -88,7 +88,6 @@ public class Main implements GLEventListener {
         gl.glShadeModel(GL2.GL_SMOOTH);
         gl.glHint(GL2.GL_PERSPECTIVE_CORRECTION_HINT, GL2.GL_NICEST);
         //gl.glMatrixMode(GL2.GL_PROJECTION);
-        //glu.gluPerspective(45.0f, (float)WINDOW_WIDTH/(float)WINDOW_HEIGHT, 0.1f, 100.f);
         //gl.glScaled(1.0, 1.0, 1.0);
     }
 
@@ -113,11 +112,12 @@ public class Main implements GLEventListener {
         gl.glClear(GL.GL_COLOR_BUFFER_BIT | GL2.GL_DEPTH_BUFFER_BIT);
         gl.glMatrixMode(GL2.GL_PROJECTION);
         gl.glLoadIdentity();
-        gl.glFrustum(-2.0, 2.0, -2, 2, 2, 9);
+        //gl.glFrustum(-2.0, 2.0, -2, 2, 2, 9);
+        glu.gluPerspective(90.0f, (float)WINDOW_WIDTH/(float)WINDOW_HEIGHT, 0.1f, 100.f);
         //glu.gluLookAt( 0.0, 0.0, -10.0, 10.0, 10.0, 10.0, 0.0, 1.0, 9.0 );
         gl.glMatrixMode(GL2.GL_MODELVIEW);
         gl.glLoadIdentity();
-        glu.gluLookAt(0.0, 0.0, 6.0, 0.0, 0.0, 5.0, 0.0, 1.0, 0.0);
+        glu.gluLookAt(0.0, 0.0, 10.0, 0.0, 0.0, -10.0, 0.0, 1.0, 0.0);
         //gl.glOrtho(-5.0, 5.0, -5.0, 5.0, -100.0, 10.0);
         //gl.glScaled(0.2, 0.2, 0.2);
         DrawHelper drawHelper = new DrawHelper(gl);

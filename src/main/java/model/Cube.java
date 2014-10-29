@@ -9,19 +9,26 @@ public class Cube {
     private Vector3 size;
     private String color;
     private Vector3 angle;
+    private Vector3 velocity;
 
     public Cube(Vector3 position, Vector3 size, String color) {
-        this.position = position;
-        this.size = size;
-        this.color = color;
-        this.angle = new Vector3(0.0, 0.0, 0.0);
+        this.init(position, size, new Vector3(0.0, 0.0, 0.0), new Vector3(0.0, 0.0, 0.0), color);
     }
 
     public Cube(Vector3 position, Vector3 size, Vector3 angle, String color) {
+        this.init(position, size, angle, new Vector3(0.0, 0.0, 0.0), color);
+    }
+
+    public Cube(Vector3 position, Vector3 size, Vector3 angle, Vector3 velocity, String color) {
+        this.init(position, size, angle, velocity, color);
+    }
+
+    public void init(Vector3 position, Vector3 size, Vector3 angle, Vector3 velocity, String color) {
         this.position = position;
         this.size = size;
-        this.color = color;
         this.angle = angle;
+        this.velocity = velocity;
+        this.color = color;
     }
 
     /**
@@ -30,6 +37,7 @@ public class Cube {
      * @param pointV3 The point to test with.
      * @return The point is in the cube.
      */
+
     public boolean pointInCube(Vector3 pointV3) {
         boolean inCube = true;
         double[] pointArray = pointV3.toArray();
@@ -132,5 +140,23 @@ public class Cube {
 
     public Vector3 getAngle() {
         return this.angle;
+    }
+
+    public Vector3 getVelocity() {
+        return velocity;
+    }
+
+    public void setVelocity(Vector3 velocity) {
+        this.velocity = velocity;
+    }
+
+    public void accellerate(Vector3 acceleration){
+        this.velocity.add(acceleration);
+    }
+
+    public void update(double timeDelta){
+        Vector3 dMove = this.velocity.copy();
+        dMove.multiply(timeDelta);
+        this.position.add(dMove);
     }
 }

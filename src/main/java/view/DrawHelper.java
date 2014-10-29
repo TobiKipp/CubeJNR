@@ -100,6 +100,10 @@ public class DrawHelper {
         for(Cube cube: worldManager.getCubes()){
             this.draw(cube);
         }
+        for(Cube cube: worldManager.getLevelCubes()){
+            this.draw(cube);
+        }
+
     }
 
 }

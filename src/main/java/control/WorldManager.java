@@ -60,7 +60,7 @@ public class WorldManager {
         if (this.keyPressed.get("page up")) rotatedz -= angleSpeed;
 
         for (Cube cube : cubes) {
-            Vector3 translateSpeed = new Vector3(movedx, movedy, movedz*1.0);
+            Vector3 translateSpeed = new Vector3(movedx, movedy, 5.0*movedz*1.0);
             translateSpeed.multiply(timeDiff);
             cube.move(translateSpeed);
             Vector3 rotateSpeed = new Vector3(rotatedx, rotatedy, rotatedz);

@@ -158,4 +158,82 @@ intersect this way the last rule applies that if any arbitrary point of this cub
 After the fix the tests are running fine and in the running program it works as expected for the surface of the
 worldCube. To fully test the functionality the camera angle has to be altered. This is for the next session.
 
+Setting up the camera
+=====================
+
+The coordinate system is right handed. x goes right y goes up z comes out of the the screen. Generally I want to look at
+the player, currently represented by the movable cube. For a first try the camera will be twice as far away from the
+openGL world origin as the box. This means the camera is at 2*cube.getPosition().
+
+It is working somehow but it looks quite strange. In the next step
+the camera is set to be in an absolute distance to the player cube. I changed the PROJECTION to orthographic, hoping
+it is what I want.
+
+The cube is change to have 2.5 time the height (y) taken from guessing the proportions of Mario on a twitch stream.
+The camera I want for now is the behind view.
+
+So what does from behind mean in coordinates? Considering world coordinates it always changes when moving. It is a
+vector in the opposite direction to the movement vector. As a first step the movement direction is assumed to be
+only in x direction.
+
+Using only a different x than the players position leads to a 2d projection eliminating x. The height is in the y
+component it has to be set correctly to get a good angle. From a snapshot the screen height is 6 times the size of Mario
+(even though that changes depending on the zoom).
+
+The angle is okay for now, but will be changed later when the movement is improved.
+
+While testing around I found another error in my collision detection. When the edges are in the cube it is working just
+fine. But when moving to the border and non of the edges intersecting the other cube it fails. Due to the gravity one
+of the edges will eventually hit in the other cube and reset the positioning. Lets see if there is any other way
+to find out if two cubes intersect.
+
+Testing is quite hard for the 3D room if one is not used to it. The manual testing showed me that I had forgotten
+the above case where none of the edges are in the other cube, but still parts overlap.
+
+Fixing the collision detection
+==============================
+
+Now I remember how I came to the number of 3 checks for the collision. It uses 3 one dimensional lines - one for each
+dimension. If for each dimension these lines of the two cubes overlap then the cubes overlap. The alternative would be
+using 16 3D points checked for being in the cube the points are not from.
+
+A real line for a 3D application would have 3 dimensions, however I am only interested in the components, which is
+why there is no reason to add another class. For each 1d line the lines either overlap partially or one contains the other
+if they intersect.
+
+For each individual line it is always true:
+end >= start
+
+This leads to 4 orders for the points of lines a and b::
+
+    a.start <= b.start <= b.end <= a.end
+    a.start <= b.start <= a.end <= b.end
+    b.start <= a.start <= a.end <= b.end
+    b.start <= a.start <= b.end <= a.end
+
+
+In all orders there is::
+
+   a.start <= b.end
+   b.start <= a.end
+
+Swapping a and b does not change anything in the condition. The test now succeeds for all test cases. Leaving
+my pointInCube method useless for now.
+
+According to the rules::
+
+   a.end >= a.start
+   b.end >= b.start
+
+Now with the violation of the above rules (one line per case)::
+
+   a.start > b.end
+   b.start > a.end
+
+It follows::
+
+   a.end >= a.start > b.end >= b.start
+   b.end >= b.start > a.end >= a.start
+
+For both cases there are no overlapping points.
 

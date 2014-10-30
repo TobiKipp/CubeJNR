@@ -84,22 +84,49 @@ public class Cube {
         return inCube;
     }
 
+
     /**
-     * Either one of the 8 vertices of this cube is in the other cube or any point of the other cube is in
-     * this cube. The later case occurs when the other cube is completely inside this cube.
+     * A cube is in another cube if their lines in each dimension intersect.
+     *
      *
      * @param cube the other cube to compare with.
      * @return The two cube have shared points.
      */
     public boolean cubeInCube(Cube cube) {
-        boolean inCube = this.pointInCube(cube.getPosition());
-        if (!inCube) {
-            Vector3[] vertices = this.getVertices();
-            for (int i = 0; i < 8; i++) {
-                inCube = cube.pointInCube(vertices[i]);
-                if (inCube) break;
+        double[] startThis = this.position.toArray();
+        double[] endThis = this.getEnd().toArray();
+        double[] startCube = cube.getPosition().toArray();
+        double[] endCube = cube.getEnd().toArray();
+        boolean inCube = true;
+        for(int i =0; i < 3; i++) {
+            //Collect the 1d points
+            double dStartThis = startThis[i];
+            double dEndThis = endThis[i];
+            double dStartCube = startCube[i];
+            double dEndCube = endCube[i];
+            //Order start < end
+            if (dStartCube > dEndCube) {
+                double temp = dEndCube;
+                dEndCube = dStartCube;
+                dStartCube = temp;
             }
+            if (dStartThis > dEndThis) {
+                double temp = dEndThis;
+                dEndThis = dStartThis;
+                dStartThis = temp;
+            }
+            //The intersection includes the start and end points.
+            //Either the one line contains the other completely or they partially overlap.
+            //With the two cubes distributed to variable a and b the two cases can be written as.
+            //For complete containment a.start <= b.start <= b.end <= a.end
+            //For partial overlap a.start <= b.start <= a.end <= b.end
+            //Extracting from both orders: a.start <= b.end and b.start <= a.end
+            //Swapping a and b does not change anything.
+            inCube = inCube && dStartCube <= dEndThis && dStartThis <= dEndCube;
+
         }
+
+
         return inCube;
     }
 
@@ -192,5 +219,15 @@ public class Cube {
         Vector3 dMove = this.velocity.copy();
         dMove.multiply(timeDelta);
         this.position.add(dMove);
+    }
+
+    /**
+     * End is the point that is reached when moving from the position by the size.
+     * @return the end point
+     */
+    public Vector3 getEnd(){
+        Vector3 end = this.position.copy();
+        end.add(this.size);
+        return end;
     }
 }

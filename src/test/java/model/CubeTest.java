@@ -101,6 +101,12 @@ public class CubeTest {
         testCube = new Cube(new Vector3(1.0, 1.0, 1.0), new Vector3(1.0, 1.0, 1.0), "white");
         assertTrue(cube.cubeInCube(testCube));
 
+        //Two overlapping cubes where the edges of neither are in the other.
+        // 0.25 to 0.75 for x and z leads to them being inside the cube. To get them outside the other
+        // cube the y is chosen to be outside of the 1x1x1 cubes y line.
+        testCube = new Cube(new Vector3(0.25, -1.0, 0.25), new Vector3(0.5, 3.0, 0.5), "white");
+        assertTrue(cube.cubeInCube(testCube));
+
     }
 
     @Test
@@ -162,5 +168,14 @@ public class CubeTest {
             }
         }
 
+    }
+
+    @Test
+    public void testGetEnd(){
+        Cube cube = new Cube(new Vector3(0.0, 0.0, 0.0), new Vector3(1.0, 1.0, 1.0), new Vector3(10.0, 20.0, 30.0), "white");
+        Vector3 end = cube.getEnd();
+        for(int i = 0; i < 3; i++){
+            assertEquals(1.0, end.toArray()[i], 0.0);
+        }
     }
 }

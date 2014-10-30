@@ -80,14 +80,28 @@ public class DrawHelper {
 
         for (int i = 0; i < 6; i++) {
             int[] plane = planes[i];
-            if(i == 0) gl2.glColor4d(1.0, 0.0, 0.0, 1.0);
-            if(i == 1) gl2.glColor4d(0.0, 1.0, 0.0, 1.0);
-            if(i == 2) gl2.glColor4d(0.0, 0.0, 1.0, 1.0);
-            if(i == 3) gl2.glColor4d(0.0, 1.0, 1.0, 1.0);
-            if(i == 5) gl2.glColor4d(1.0, 0.0, 1.0, 1.0);
-            if(i == 4) gl2.glColor4d(1.0, 1.0, 0.0, 1.0);
+            String color = cube.getColor();
+
+            if(color.equals("white")){
+                gl2.glColor4d(1.0, 1.0, 1.0, 1.0);
+            }
             gl2.glBegin(GL2.GL_QUADS);
             for (int j = 0; j < 4; j++) {
+
+                if(color.equals("test")) {
+                    double dj = ((double)j+1.0)/4.0;
+                    if (i == 0) gl2.glColor4d(dj*1.0, dj, 0.0, 1.0);
+                    if (i == 1) gl2.glColor4d(0.0, dj*1.0, dj, 1.0);
+                    if (i == 2) {
+                        if(j==0) gl2.glColor4d(0.0, 0.0, 1.0, 1.0);
+                        if(j==1) gl2.glColor4d(0.0, 1.0, 1.0, 1.0);
+                        if(j==2) gl2.glColor4d(1.0, 0.0, 0.0, 1.0);
+                        if(j==3) gl2.glColor4d(0.0, 1.0, 0.0, 1.0);
+                    }
+                    if (i == 3) gl2.glColor4d(0.0, dj*1.0, 1.0-dj, 1.0);
+                    if (i == 5) gl2.glColor4d(dj*1.0, 0.0, 1.0-dj, 1.0);
+                    if (i == 4) gl2.glColor4d(dj*1.0, 1.0-dj, 0.0, 1.0);
+                }
                 Vector3 edge = edges[plane[j]];
                 gl2.glVertex3d(edge.getX(), edge.getY(), edge.getZ());
             }

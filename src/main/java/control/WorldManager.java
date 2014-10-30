@@ -15,7 +15,7 @@ public class WorldManager {
     private List<Cube> cubes;
     private List<Cube> levelCubes;
     private double time;
-    private static double moveSpeed = 1.0;
+    private static double moveSpeed = 5.0;
     private static double angleSpeed = 30.0;
 
     public static String[] availableKeys = {"left", "right", "up", "down", "page up", "page down", "home", "end",
@@ -69,8 +69,8 @@ public class WorldManager {
             //Vector3 translateSpeed = new Vector3(movedx, movedy, 5.0*movedz*1.0);
             //translateSpeed.multiply(timeDiff);
             //cube.move(translateSpeed);
-            cube.move(new Vector3(0.0, -0.1*timeDiff, 0.0));
-            cube.setVelocity(new Vector3(movedx, movedy, 5.0*movedz));
+            cube.move(new Vector3(0.0, -0.4*timeDiff, 0.0));
+            cube.setVelocity(new Vector3(movedx, movedy, movedz));
             cube.update(timeDiff);
             Vector3 rotateSpeed = new Vector3(rotatedx, rotatedy, rotatedz);
             rotateSpeed.multiply(timeDiff);
@@ -78,8 +78,9 @@ public class WorldManager {
             //Find overlaps with the level and handle them.
             for(Cube levelCube: this.levelCubes){
                 if(cube.cubeInCube(levelCube)){
-                    System.out.println("Intersection");
-                    cube.move(new Vector3(0.0, 0.1, 0.0));//Assuming only gravity is active moving up on collision.
+                    Vector3 pos = cube.getPosition();
+                    double cubey = levelCube.getPosition().getY() + levelCube.getSize().getY();
+                    cube.setPosition(new Vector3(pos.getX(),  cubey, pos.getZ()));//Assuming only gravity is active moving up on collision.
                 }
             }
         }

@@ -72,9 +72,9 @@ public class DrawHelper {
         gl2.glTranslated(center[0], center[1], center[2]);
         //Rotate it
         Vector3 angle = cube.getAngle();
-        gl2.glRotated(angle.getX() , 1.0, 0.0, 0.0);
-        gl2.glRotated(angle.getY() , 0.0, 1.0, 0.0);
-        gl2.glRotated(angle.getZ() , 0.0, 0.0, 1.0);
+        gl2.glRotated(angle.get("X") , 1.0, 0.0, 0.0);
+        gl2.glRotated(angle.get("Y") , 0.0, 1.0, 0.0);
+        gl2.glRotated(angle.get("Z") , 0.0, 0.0, 1.0);
         //Restore the position
         gl2.glTranslated(-center[0], -center[1], -center[2]);
 
@@ -103,7 +103,7 @@ public class DrawHelper {
                     if (i == 4) gl2.glColor4d(dj*1.0, 1.0-dj, 0.0, 1.0);
                 }
                 Vector3 edge = edges[plane[j]];
-                gl2.glVertex3d(edge.getX(), edge.getY(), edge.getZ());
+                gl2.glVertex3d(edge.get("X"), edge.get("Y"), edge.get("Z"));
             }
             gl2.glEnd();
         }

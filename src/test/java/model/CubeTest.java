@@ -113,39 +113,39 @@ public class CubeTest {
     public void testMove() throws Exception {
         Cube cube = new Cube(new Vector3(0.0, 0.0, 0.0), new Vector3(1.0, 1.0, 1.0), "white");
         cube.move(new Vector3(1.0, 0.0, 0.0));
-        assertEquals(1.0, cube.getPosition().getX(), 0.0);
-        assertEquals(0.0, cube.getPosition().getY(), 0.0);
-        assertEquals(0.0, cube.getPosition().getZ(), 0.0);
+        assertEquals(1.0, cube.getPosition().get("X"), 0.0);
+        assertEquals(0.0, cube.getPosition().get("Y"), 0.0);
+        assertEquals(0.0, cube.getPosition().get("Z"), 0.0);
     }
 
     @Test
     public void testRotate() throws Exception {
         Cube cube = new Cube(new Vector3(0.0, 0.0, 0.0), new Vector3(1.0, 1.0, 1.0), "white");
         cube.rotate(new Vector3(45.0, 42.0, 41.0));
-        assertEquals(45.0, cube.getAngle().getX(), 0.0);
-        assertEquals(42.0, cube.getAngle().getY(), 0.0);
-        assertEquals(41.0, cube.getAngle().getZ(), 0.0);
+        assertEquals(45.0, cube.getAngle().get("X"), 0.0);
+        assertEquals(42.0, cube.getAngle().get("Y"), 0.0);
+        assertEquals(41.0, cube.getAngle().get("Z"), 0.0);
     }
 
     @Test
     public void testRotateX() {
         Cube cube = new Cube(new Vector3(0.0, 0.0, 0.0), new Vector3(1.0, 1.0, 1.0), new Vector3(10.0, 20.0, 30.0), "white");
-        cube.rotateX(45.0);
-        assertEquals(55.0, cube.getAngle().getX(), 0.0);
+        cube.rotate("X", 45.0);
+        assertEquals(55.0, cube.getAngle().get("X"), 0.0);
     }
 
     @Test
     public void testRotateY() {
         Cube cube = new Cube(new Vector3(0.0, 0.0, 0.0), new Vector3(1.0, 1.0, 1.0), new Vector3(10.0, 20.0, 30.0), "white");
-        cube.rotateY(45.0);
-        assertEquals(65.0, cube.getAngle().getY(), 0.0);
+        cube.rotate("Y", 45.0);
+        assertEquals(65.0, cube.getAngle().get("Y"), 0.0);
     }
 
     @Test
     public void testRotateZ() {
         Cube cube = new Cube(new Vector3(0.0, 0.0, 0.0), new Vector3(1.0, 1.0, 1.0), new Vector3(10.0, 20.0, 30.0), "white");
-        cube.rotateZ(45.0);
-        assertEquals(75.0, cube.getAngle().getZ(), 0.0);
+        cube.rotate("Z", 45.0);
+        assertEquals(75.0, cube.getAngle().get("Z"), 0.0);
     }
 
     @Test
@@ -182,8 +182,19 @@ public class CubeTest {
     @Test
     public void testRun(){
         Cube cube = new Cube(new Vector3(0.0, 0.0, 0.0), new Vector3(1.0, 1.0, 1.0), new Vector3(10.0, 20.0, 30.0), "white");
-        cube.run(1.0, 70.0);//y = 90 => x = 1.0 and  z = 0.0
-        assertEquals(1.0, cube.getPosition().getX(), 1.0E-15);//due to rounding there might be minor errors.
-        assertEquals(0.0, cube.getPosition().getZ(), 1.0E-15);
+        cube.prepareMove(1.0, 70.0, new Vector3(0.0, 0.0, 0.0));//ry = 90 und t = 1s => x = 1.0 and  z = 0.0
+        cube.update(1.0);//move for 1 second
+        assertEquals(1.0, cube.getPosition().get("X"), 1.0E-15);//due to rounding there might be minor errors.
+        assertEquals(0.0, cube.getPosition().get("Z"), 1.0E-15);
+    }
+
+    @Test
+    public void testGenerateMoveCube(){
+        Cube cube = new Cube(new Vector3(0.0, 0.0, 0.0), new Vector3(1.0, 1.0, 1.0), new Vector3(10.0, 20.0, 30.0), "white");
+        cube.setVelocity(new Vector3(1.0, -1.0, 0.0));
+        //The cube pos (0,0,0) size (1,1,1) is moved by (1,-1,1). The moveCube should be pos (0,-1,0) size (2,2,1)
+        Cube expectedMoveCube = new Cube(new Vector3(0.0, -1.0, 0.0), new Vector3(2.0, 2.0, 1.0), new Vector3(10.0, 20.0, 30.0), "white");
+        Cube moveCube = cube.generateMoveCube(1.0);
+        assertTrue(expectedMoveCube.similar(moveCube));
     }
 }

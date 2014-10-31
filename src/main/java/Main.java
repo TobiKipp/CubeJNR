@@ -30,10 +30,14 @@ public class Main implements GLEventListener {
 
     public static void main(String[] args) {
         worldManager = new WorldManager();
-        Cube cube = new Cube(new Vector3(0.0, 0.0, 0.0), new Vector3(1.0, 2.5, 1.0), "test");
+        Cube cube = new Cube(new Vector3(0.0, 10.0, 0.0), new Vector3(1.0, 2.5, 1.0), "test");
         worldManager.addCube(cube);
         cube = new Cube(new Vector3(0.0, -1.0, -20.0), new Vector3(40.0, 1.0, 40.0), "test");
         worldManager.addLevelCube(cube);
+        Cube wall = new Cube(new Vector3(40.0, -1.0, -20.0), new Vector3(2.0, 20.0, 40.0), "white");
+        worldManager.addLevelCube(wall);
+        wall = new Cube(new Vector3(0.0, -1.0, 20.0), new Vector3(40.0, 20.0, 2.0), "test");
+        worldManager.addLevelCube(wall);
         // Get the default OpenGL profile, reflecting the best for your running platform
         GLProfile glp = GLProfile.getDefault();
         // Specifies a set of OpenGL capabilities, based on your profile.
@@ -119,26 +123,19 @@ public class Main implements GLEventListener {
         gl.glMatrixMode(GL2.GL_MODELVIEW);
         gl.glLoadIdentity();
         Cube player = worldManager.getCubes().get(0);
-        //The camera should be at 2*player.position and look at the
-        //player. Up should be the y axis
+        //Set the camera to be behind the player
         Vector3 pxyz = player.getPosition();
-        double px = pxyz.getX();
-        double py = pxyz.getY();
-        double pz = pxyz.getZ();
-        double ry = player.getAngle().getY();
+        double px = pxyz.get("X");
+        double py = pxyz.get("Y");
+        double pz = pxyz.get("Z");
+        double ry = player.getAngle().get("Y");
         double cameraDistance = 20.0;
         double cy = 10.0;
         double cx = Math.sin(Math.PI/180.0*ry)*cameraDistance;
         double cz = Math.cos(Math.PI/180.0*ry)*cameraDistance;
-
-
         glu.gluLookAt(cx+px, cy+py, cz+pz, px, py, pz, 0.0, 1.0, 0.0);
-        //gl.glOrtho(-5.0, 5.0, -5.0, 5.0, -100.0, 10.0);
-        //gl.glScaled(0.2, 0.2, 0.2);
+        //Draw the worlds objects
         DrawHelper drawHelper = new DrawHelper(gl);
-
-
-
         drawHelper.draw(worldManager);
 
 

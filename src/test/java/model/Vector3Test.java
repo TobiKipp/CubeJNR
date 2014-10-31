@@ -7,30 +7,35 @@ import static org.junit.Assert.*;
 public class Vector3Test {
 
     @Test
-    public void testSet() throws Exception {
-        Vector3 vec3 = new Vector3();
-        assertEquals(0.0, vec3.getX(), 0.0);
-        assertEquals(0.0, vec3.getY(), 0.0);
-        assertEquals(0.0, vec3.getZ(), 0.0);
+    public void testSetAndGet() throws Exception {
+        Vector3 vec3 = new Vector3();//The default is the 0 vector
+        for(int i = 0; i < 3; i++) {
+            assertEquals(0.0, vec3.get(i), 0.0);
+        }
         vec3.set(1.0, 2.0, 3.0);
-        assertEquals(1.0, vec3.getX(), 0.0);
-        assertEquals(2.0, vec3.getY(), 0.0);
-        assertEquals(3.0, vec3.getZ(), 0.0);
-        vec3.setX(2.0);
-        vec3.setY(4.0);
-        vec3.setZ(6.0);
-        assertEquals(2.0, vec3.getX(), 0.0);
-        assertEquals(4.0, vec3.getY(), 0.0);
-        assertEquals(6.0, vec3.getZ(), 0.0);
+        for(int i = 0; i < 3; i++) {
+            assertEquals((float)i+1.0, vec3.get(i), 0.0);
+        }
+        vec3.set("X", 2.0);
+        vec3.set("Y", 4.0);
+        vec3.set(2, 6.0);
+        for(int i = 0; i < 3; i++) {
+            assertEquals((float)(i+1)*2.0, vec3.get(i), 0.0);
+        }
+        //The getter for dimension in String and Integer format should be equal.
+        assertEquals(vec3.get(0), vec3.get("x"), 0.0);
+        assertEquals(vec3.get(1), vec3.get("Y"), 0.0);
+        assertEquals(vec3.get(2), vec3.get("z"), 0.0);
     }
 
     @Test
     public void testCopy() throws Exception {
         Vector3 vec3 = new Vector3(new double[]{1.0, 3.0, 5.0});
         Vector3 vec3Copy = vec3.copy();
-        assertEquals(vec3.getX(), vec3Copy.getX(), 0.0);
-        assertEquals(vec3.getY(), vec3Copy.getY(), 0.0);
-        assertEquals(vec3.getZ(), vec3Copy.getZ(), 0.0);
+        for(int i = 0; i < 3; i++){
+        assertEquals(vec3.get(i), vec3Copy.get(i), 0.0);
+
+        }
         assertNotEquals(vec3, vec3Copy);
     }
 

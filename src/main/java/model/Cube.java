@@ -26,7 +26,7 @@
 package model;
 
 public class Cube {
-
+    private static final double MATH_ACCURACY = 1.0E-10;
     private Vector3 position;
     private Vector3 size;
     private String color;
@@ -34,11 +34,11 @@ public class Cube {
     private Vector3 velocity;
 
     public Cube(Vector3 position, Vector3 size, String color) {
-        this.init(position, size, new Vector3(0.0, 0.0, 0.0), new Vector3(0.0, 0.0, 0.0), color);
+        this.init(position, size, new Vector3(), new Vector3(), color);
     }
 
     public Cube(Vector3 position, Vector3 size, Vector3 angle, String color) {
-        this.init(position, size, angle, new Vector3(0.0, 0.0, 0.0), color);
+        this.init(position, size, angle, new Vector3(), color);
     }
 
     public Cube(Vector3 position, Vector3 size, Vector3 angle, Vector3 velocity, String color) {
@@ -88,7 +88,6 @@ public class Cube {
     /**
      * A cube is in another cube if their lines in each dimension intersect.
      *
-     *
      * @param cube the other cube to compare with.
      * @return The two cube have shared points.
      */
@@ -98,7 +97,7 @@ public class Cube {
         double[] startCube = cube.getPosition().toArray();
         double[] endCube = cube.getEnd().toArray();
         boolean inCube = true;
-        for(int i =0; i < 3; i++) {
+        for (int i = 0; i < 3; i++) {
             //Collect the 1d points
             double dStartThis = startThis[i];
             double dEndThis = endThis[i];
@@ -123,10 +122,7 @@ public class Cube {
             //Extracting from both orders: a.start <= b.end and b.start <= a.end
             //Swapping a and b does not change anything.
             inCube = inCube && dStartCube <= dEndThis && dStartThis <= dEndCube;
-
         }
-
-
         return inCube;
     }
 
@@ -140,13 +136,16 @@ public class Cube {
         for (int i = 0; i < 8; i++) {
             vertices[i] = this.position.copy();
         }
-        vertices[1].add(new Vector3(this.size.getX(), 0.0, 0.0));
-        vertices[2].add(new Vector3(0.0, 0.0, this.size.getZ()));
-        vertices[3].add(new Vector3(this.size.getX(), 0.0, this.size.getZ()));
-        vertices[4].add(new Vector3(0.0, this.size.getY(), 0.0));
-        vertices[5].add(new Vector3(this.size.getX(), this.size.getY(), 0.0));
-        vertices[6].add(new Vector3(0.0, this.size.getY(), this.size.getZ()));
-        vertices[7].add(new Vector3(this.size.getX(), this.size.getY(), this.size.getZ()));
+        double sizeX = this.size.get("X");
+        double sizeY = this.size.get("Y");
+        double sizeZ = this.size.get("Z");
+        vertices[1].add(new Vector3(sizeX, 0.0, 0.0));
+        vertices[2].add(new Vector3(0.0, 0.0, sizeZ));
+        vertices[3].add(new Vector3(sizeX, 0.0, sizeZ));
+        vertices[4].add(new Vector3(0.0, sizeY, 0.0));
+        vertices[5].add(new Vector3(sizeX, sizeY, 0.0));
+        vertices[6].add(new Vector3(0.0, sizeY, sizeZ));
+        vertices[7].add(new Vector3(sizeX, sizeY, sizeZ));
         return vertices;
     }
 
@@ -159,12 +158,28 @@ public class Cube {
         return position;
     }
 
+    public double getPosition(String dimension) {
+        return position.get(dimension);
+    }
+
+    public double getPosition(int dimension) {
+        return position.get(dimension);
+    }
+
     public void setPosition(Vector3 position) {
         this.position = position;
     }
 
     public Vector3 getSize() {
         return size;
+    }
+
+    public double getSize(String dimension) {
+        return size.get(dimension);
+    }
+
+    public double getSize(int dimension) {
+        return size.get(dimension);
     }
 
     public void setSize(Vector3 size) {
@@ -183,17 +198,10 @@ public class Cube {
         this.angle.add(degreeRotation);
     }
 
-    public void rotateX(double degrees) {
-        this.angle.setX(this.angle.getX() + degrees);
+    public void rotate(String dimension, double degrees) {
+        this.angle.set(dimension, this.angle.get(dimension) + degrees);
     }
 
-    public void rotateY(double degrees) {
-        this.angle.setY(this.angle.getY() + degrees);
-    }
-
-    public void rotateZ(double degrees) {
-        this.angle.setZ(this.angle.getZ() + degrees);
-    }
 
     public void setAngle(Vector3 angle) {
         this.angle = angle;
@@ -201,6 +209,14 @@ public class Cube {
 
     public Vector3 getAngle() {
         return this.angle;
+    }
+
+    public double getAngle(String dimension) {
+        return this.angle.get(dimension);
+    }
+
+    public double getAngle(int dimension) {
+        return this.angle.get(dimension);
     }
 
     public Vector3 getVelocity() {
@@ -223,24 +239,119 @@ public class Cube {
 
     /**
      * End is the point that is reached when moving from the position by the size.
+     *
      * @return the end point
      */
-    public Vector3 getEnd(){
+    public Vector3 getEnd() {
         Vector3 end = this.position.copy();
         end.add(this.size);
         return end;
     }
-
+    public double getEnd(String dimension) {
+       return this.getEnd().get(dimension);
+    }
+    public double getEnd(int dimension) {
+        return this.getEnd().get(dimension);
+    }
     /**
-     * Rotates the cube and then calculates the direction to move based on rotation and speed.
-     * @param playerSpeed The speed the cube should move with
+     * Prepares the movement before collision detection, by rotating the cube
+     * and setting an initial velocity.
+     *
+     * @param playerSpeed  The speed the cube should move with
      * @param playerRotate the angle to rotate the cube before moving.
      */
-    public void run(double playerSpeed, double playerRotate) {
-        this.rotateY(playerRotate);
-        double ry = this.angle.getY();
-        double dx = Math.sin(Math.PI/180.0*ry)*playerSpeed;
-        double dz = Math.cos(Math.PI/180.0*ry)*playerSpeed;
-        this.move(new Vector3(dx, 0.0, dz));
+    public void prepareMove(double playerSpeed, double playerRotate, Vector3 gravity) {
+        this.rotate("Y", playerRotate);
+        double ry = this.angle.get("Y");
+        double dx = Math.sin(Math.PI / 180.0 * ry) * playerSpeed;
+        double dz = Math.cos(Math.PI / 180.0 * ry) * playerSpeed;
+        this.velocity = new Vector3(dx, 0.0, dz);
+        this.velocity.add(gravity);
+    }
+
+    public Cube copy() {
+        return new Cube(this.position.copy(), this.size.copy(), this.angle.copy(), this.velocity.copy(), this.color);
+    }
+
+    public void handleIntersection(Cube otherCube, Cube moveCube) {
+        Vector3 startMoveCube = moveCube.getPosition();
+        Vector3 endMoveCube = moveCube.getEnd();
+        System.out.println(velocity.toString());
+        for (int i = 0; i < 3; i++) {
+            double vi = velocity.get(i);
+            if (vi >= MATH_ACCURACY) {
+                //vi is positive and in the step before cube and levelCube did not intersect.
+                //If the end of the cube would be larger then the position of the levelCube after moving
+                //(endold--wall-->endnew) the velocity has to be truncated such that it does not collide
+                //(endold-->endnew wall).
+                double di = moveCube.getEnd(i) - otherCube.getPosition(i);
+                if (di > 0) {
+                    velocity.set(i, vi - di);
+                }
+            } else if (vi <= -MATH_ACCURACY) {
+                //posnew <--wall--posold  => wall posnew <-- posold
+                //For posnew < wall => wall-posnew > 0, with vi being negative the difference has to be added to
+                //neutralize the velocity.
+                double di = otherCube.getEnd(i) - moveCube.getPosition(i);
+                if (di > 0) {
+                    velocity.set(i, vi + di);
+                }
+            }
+        }
+        System.out.println(velocity.toString());
+        System.out.println();
+    }
+
+    /**
+     * Generates a cube that contains all possible points the cube could be at during the movement in the time interval.
+     *
+     * @param timeDiff the time interval since last update
+     * @return The Cube containing all possible points where this cube could be on the move.
+     */
+    public Cube generateMoveCube(double timeDiff) {
+        Cube moveCube = this.copy();
+        //negative velocity is added (which is subtracted the absolute) from the position and the size must be adjusted,
+        //positive is only added to the size.
+        Vector3 posAdd = new Vector3();
+        Vector3 sizeAdd = new Vector3();
+        for (int i = 0; i < 3; i++) {
+            double vi = velocity.get(i);
+            if (vi > 0) sizeAdd.set(i, vi);
+            else{
+                sizeAdd.set(i, -vi);
+                posAdd.set(i, vi);
+            }
+        }
+
+        moveCube.getPosition().add(posAdd);
+        moveCube.getSize().add(sizeAdd);
+        return moveCube;
+    }
+
+    /**
+     * Similar is an equals that only considers the current placement.
+     *
+     * @param otherCube
+     * @return
+     */
+    public boolean similar(Cube otherCube) {
+        for (int i = 0; i < 3; i++) {
+            if (this.getPosition(i) != otherCube.getPosition(i)) {
+                return false;
+            }
+            if (this.getSize(i) != otherCube.getSize(i)) {
+                return false;
+            }
+            if (this.getAngle(i) != otherCube.getAngle(i)) {
+                return false;
+            }
+        }
+        return true;
+
+    }
+
+    public String toString(){
+        return ("Position:" + this.position.toString() + ", Size:" + this.size.toString() + ", Angle:" +
+                this.angle.toString());
     }
 }

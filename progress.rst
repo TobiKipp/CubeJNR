@@ -264,4 +264,54 @@ To get things clear in my head::
 On a first manual test the box probably moved as it should, but the rotation was in the wrong direction, which
 is fixed by swapping the sign for rotate without further proofing things. The probably comes from the fact that the
 camera was not set up yet. The camera should stay behind the box. It will have to rotate in the same angle as the
-player
+player.
+
+Extending collision handling
+============================
+
+For now the only collision handling is putting the player on top of the intersected object. The next intersection
+added is running against a wall. For this the first step is obviously adding that wall to the world.
+Due to the current handling of intersections the player is put on top of the wall.
+
+In the simplest case on an intersection with an object the velocity can be used to determine how the unit has
+to be placed.
+Assuming only moving in x direction leading to an intersection with a wall. With the size always being positive
+if the movement direction is positive then the player runs to the right into the left handed side of the wall.
+Then player.position.x+player.size.x must be smaller than wall.position.x. For negative movement direction
+it is player.position.x must be larger than wall.position.x+wall.size.x.
+This way does not work as I would like it to. This means the collision must be handled one step before it
+actually happens.
+
+Lets assume moving consists of the cube with diagonal from pos to pos+size changes to from pos to pos+size+velocity*dt
+and afterwards shrinking again but anchored to pos+size+velocity*dt. If during its expansion it intersects with a wall
+it will stop growing in that direction.
+Alternatively formulated: The cube take any possible way to get to its goal and will prefer the one where it collides
+(inside the room describe above).
+
+Instead of checking the cube for intersecting the cubes potential position space is checked for intersection.
+
+Removing code duplication
+-------------------------
+
+Much of the code is equivalent with exception to the dimension used. Therefore I will refactor the classes to
+use maps instead of 3 variables.
+
+Depending on the situation the use of 0, 1 and 2 or the use of x, y and z might be best. An array will be used
+as the base structure. The get method will be changed to return the complete array, while for each dimension
+the String or the index Integer can be used as first parameter. Set keeps this parameter and allows to use
+another Vector3 object to set this Vector3.
+
+While cleaning up I noticed another issue. I will now use the term velocity as it is really meant to be.
+Then the previously named velocityCube must be correctly named moveCube, as it describes all possible paths
+the cube may take. In addition I will move the handling of the collision with one other cube to the Cube class.
+One of the reasons is that it makes it easier to test without depending on too many classes. As the moveCube
+depends on the time since the last draw I will also add a method in the Cube class to generate it there.
+
+With the restructuring I added some shortcut methods. The cubes getPosition can have an parameter which directly returns
+the provided dimension. So instead of wrting getPostion().get(i) it can be written as getPostion(i).
+
+Getting the collision handling correct
+--------------------------------------
+
+TODO next session: Currently the player moves in the wrong direction on collision. I will have to calculate
+the different cases here.

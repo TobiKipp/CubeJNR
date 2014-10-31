@@ -16,7 +16,7 @@ public class WorldManager {
     private List<Cube> levelCubes;
     private double time;
     private static double moveSpeed = 5.0;
-    private static double angleSpeed = 30.0;
+    private static double angleSpeed = 90.0;
 
     public static String[] availableKeys = {"left", "right", "up", "down", "page up", "page down", "home", "end",
             "insert", "delete", "minus", "plus"};
@@ -44,37 +44,24 @@ public class WorldManager {
     public void update() {
         double timeNew = System.currentTimeMillis() / 1000.0;
         double timeDiff = timeNew - time;
-        //translate
-        double movedx = 0.0;
-        if (this.keyPressed.get("left")) movedx -= moveSpeed;
-        if (this.keyPressed.get("right")) movedx += moveSpeed;
-        double movedy = 0.0;
-        if (this.keyPressed.get("down")) movedy -= moveSpeed;
-        if (this.keyPressed.get("up")) movedy += moveSpeed;
-        double movedz = 0.0;
-        if (this.keyPressed.get("minus")) movedz -= moveSpeed;
-        if (this.keyPressed.get("plus")) movedz += moveSpeed;
-        //rotate
-        double rotatedx = 0.0;
-        if (this.keyPressed.get("home")) rotatedx += angleSpeed;
-        if (this.keyPressed.get("end")) rotatedx -= angleSpeed;
-        double rotatedy = 0.0;
-        if (this.keyPressed.get("delete")) rotatedy += angleSpeed;
-        if (this.keyPressed.get("page down")) rotatedy -= angleSpeed;
-        double rotatedz = 0.0;
-        if (this.keyPressed.get("insert")) rotatedz += angleSpeed;
-        if (this.keyPressed.get("page up")) rotatedz -= angleSpeed;
+
+        double playerSpeedAbsolute = timeDiff*moveSpeed;
+        double playerSpeed = 0.0;
+        if (this.keyPressed.get("down")) playerSpeed += playerSpeedAbsolute;
+        if (this.keyPressed.get("up")) playerSpeed -= playerSpeedAbsolute;
+
+        double playerRotateAbsoulte = timeDiff*angleSpeed;
+        double playerRotate= 0.0;
+        if (this.keyPressed.get("left")) playerRotate += playerRotateAbsoulte;
+        if (this.keyPressed.get("right")) playerRotate -= playerRotateAbsoulte;
+
 
         for (Cube cube : this.cubes) {
             //Vector3 translateSpeed = new Vector3(movedx, movedy, 5.0*movedz*1.0);
             //translateSpeed.multiply(timeDiff);
             //cube.move(translateSpeed);
+            cube.run(playerSpeed, playerRotate);
             cube.move(new Vector3(0.0, -0.4*timeDiff, 0.0));
-            cube.setVelocity(new Vector3(movedx, movedy, movedz));
-            cube.update(timeDiff);
-            Vector3 rotateSpeed = new Vector3(rotatedx, rotatedy, rotatedz);
-            rotateSpeed.multiply(timeDiff);
-            cube.rotate(rotateSpeed);
             //Find overlaps with the level and handle them.
             for(Cube levelCube: this.levelCubes){
                 if(cube.cubeInCube(levelCube)){

@@ -237,3 +237,31 @@ It follows::
 
 For both cases there are no overlapping points.
 
+Adjusting controls
+==================
+
+The goal is to turn arrow up in running forward down running backward and left and right are turning the player.
+The direction the player is running is based on its x and z rotation. The y component is only of interest for jumps.
+The camera should still stay behind the player, resulting in everything else turning. I will leave out jumping for
+now as it might need a different camera handling.
+
+The starting angle in each dimension is (0, 0, 0) As we walk on the xz plane the rotation axis is parallel to the y
+dimension. To keep the length of the velocity vector and with it the movement speed constant it means points with
+z and x are moving on a circle. The rotation of y in degrees is ry.::
+
+   x/speed = sin(ry)
+   z/speed = cos(ry)
+
+To get things clear in my head::
+
+    Expected from Pythagoras theorem: speed = sqrt(x^2 + z^2)
+    => speed = sqrt(speed^2 * sin^2(ry) + speed^2 * cos^2(ry)
+    => speed = sqrt(speed^2 * (sin^2(ry) + cos^2(ry))
+    => speed = sqrt(speed^2)
+    => speed = speed
+
+
+On a first manual test the box probably moved as it should, but the rotation was in the wrong direction, which
+is fixed by swapping the sign for rotate without further proofing things. The probably comes from the fact that the
+camera was not set up yet. The camera should stay behind the box. It will have to rotate in the same angle as the
+player

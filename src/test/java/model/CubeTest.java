@@ -178,4 +178,12 @@ public class CubeTest {
             assertEquals(1.0, end.toArray()[i], 0.0);
         }
     }
+
+    @Test
+    public void testRun(){
+        Cube cube = new Cube(new Vector3(0.0, 0.0, 0.0), new Vector3(1.0, 1.0, 1.0), new Vector3(10.0, 20.0, 30.0), "white");
+        cube.run(1.0, 70.0);//y = 90 => x = 1.0 and  z = 0.0
+        assertEquals(1.0, cube.getPosition().getX(), 1.0E-15);//due to rounding there might be minor errors.
+        assertEquals(0.0, cube.getPosition().getZ(), 1.0E-15);
+    }
 }

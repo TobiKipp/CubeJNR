@@ -125,9 +125,12 @@ public class Main implements GLEventListener {
         double px = pxyz.getX();
         double py = pxyz.getY();
         double pz = pxyz.getZ();
-        double cx = -20.0;
-        double cy = 3.0;
-        double cz = 0.0;
+        double ry = player.getAngle().getY();
+        double cameraDistance = 20.0;
+        double cy = 10.0;
+        double cx = Math.sin(Math.PI/180.0*ry)*cameraDistance;
+        double cz = Math.cos(Math.PI/180.0*ry)*cameraDistance;
+
 
         glu.gluLookAt(cx+px, cy+py, cz+pz, px, py, pz, 0.0, 1.0, 0.0);
         //gl.glOrtho(-5.0, 5.0, -5.0, 5.0, -100.0, 10.0);

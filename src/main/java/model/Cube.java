@@ -230,4 +230,17 @@ public class Cube {
         end.add(this.size);
         return end;
     }
+
+    /**
+     * Rotates the cube and then calculates the direction to move based on rotation and speed.
+     * @param playerSpeed The speed the cube should move with
+     * @param playerRotate the angle to rotate the cube before moving.
+     */
+    public void run(double playerSpeed, double playerRotate) {
+        this.rotateY(playerRotate);
+        double ry = this.angle.getY();
+        double dx = Math.sin(Math.PI/180.0*ry)*playerSpeed;
+        double dz = Math.cos(Math.PI/180.0*ry)*playerSpeed;
+        this.move(new Vector3(dx, 0.0, dz));
+    }
 }

@@ -66,17 +66,17 @@ public class WorldManager {
         for (Cube cube : this.cubes) {
             Vector3 gravity = new Vector3();
             if (this.keyPressed.get("minus")){
-               gravity = new Vector3(0.0, -1.0, 0.0);
+               gravity = new Vector3(0.0, -98.1*timeDiff, 0.0);
             }
             cube.prepareMove(playerSpeed, playerRotate*timeDiff, gravity);
 
             for (Cube levelCube : this.levelCubes) {
                 Cube moveCube = cube.generateMoveCube(timeDiff);
                 if (moveCube.cubeInCube(levelCube)) {
-                    cube.handleIntersection(levelCube, moveCube);
-
+                    cube.handleIntersection(levelCube, moveCube, timeDiff);
                 }
             }
+
             cube.update(timeDiff);
 
         }

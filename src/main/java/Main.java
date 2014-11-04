@@ -137,7 +137,5 @@ public class Main implements GLEventListener {
         //Draw the worlds objects
         DrawHelper drawHelper = new DrawHelper(gl);
         drawHelper.draw(worldManager);
-
-
     }
 }

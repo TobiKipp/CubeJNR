@@ -12,6 +12,8 @@ most. I had something like a very simplified Super Mario 64 in my mind.
 There are probably many engines out there that make things easier, however
 I want to get a better understanding for the steps involved from low level graphic access to a game.
 
+
+
 A cube - first version
 ======================
 
@@ -308,10 +310,126 @@ One of the reasons is that it makes it easier to test without depending on too m
 depends on the time since the last draw I will also add a method in the Cube class to generate it there.
 
 With the restructuring I added some shortcut methods. The cubes getPosition can have an parameter which directly returns
-the provided dimension. So instead of wrting getPostion().get(i) it can be written as getPostion(i).
+the provided dimension. So instead of writing getPostion().get(i) it can be written as getPostion(i).
 
 Getting the collision handling correct
 --------------------------------------
 
-TODO next session: Currently the player moves in the wrong direction on collision. I will have to calculate
-the different cases here.
+First the one dimensional case:
+
+The different cases with x as the start, ---> as the movement vector and | as the wall.
+
+Cases that have no collision::
+
+    x--->|
+    x-->  |
+    |<---x
+    |  <-x
+
+With collision::
+
+    x---|---->
+    <---|----x
+    a   b    c
+
+In case no collision happens the object is moved like the movement vector suggests.
+For the collsion the vector is too long and has to be truncated such, that it is the
+length of the 1. and 3. non colliding case. In the first collision case 6 character widths would
+have to be removed from the movement vector and in the second case it is 5, but in the other direction.
+
+With the names above in the integer range we have the speed vector vx and the to truncate part dx. For the first
+collision case::
+
+    vx = c-a
+    dx = c-b - 1
+    vxnew = vx - dx = c - a - (c - b - 1) = b - a -1
+
+For real numbers the -1 can be drop as an infinitely small number would prevent the collision with the wall.
+So it is either taking the speed vector and subtract the dx or just setting the vector as the difference between wall
+and player (b-a).
+
+So what did I do in my code? ::
+
+    Vector3 startMoveCube = moveCube.getPosition();
+    Vector3 endMoveCube = moveCube.getEnd();
+    for (int i = 0; i < 3; i++) {
+        double vi = velocity.get(i);
+        if (vi >= MATH_ACCURACY) {
+            double di = moveCube.getEnd(i) - otherCube.getPosition(i);
+                if (di > 0) {
+                    velocity.set(i, vi - di);
+                }
+
+vi >= MATH_ACCURACY means the speed vector is in positive direction. The MATH_ACCURACY is due to sin and cos
+being not exactly 0 due to computational limitations. It is for each dimension the speed vector component vi.
+I will use right and left as suitable for the x dimension in standard representations.
+The difference di is the furthest right point of the player cube minus the furthest left point of the wall.
+If di is negative there is no collision in this dimension. If it is positive it has to be removed from the vector
+component as derived above. From vi being greater than 0 and the player being left of the wall it must hold
+that vi >= di. The vector may not invert its direction.
+
+I added some output code at one moment hitting the wall the output was::
+
+    vi=
+    4.090749190086851
+    vi-di=
+    -11.923634241522546
+
+I think the issue is with the generation of the moveCube. It seems I have missed adding the time difference since
+last update. vi is the velocity, which is time independent, while the di is the distance. So I mixed up units.
+So the velocity to subtract is di/timediff.
+
+Now I see were another problem lies. My test for the moveCube was using 1 second for testing, which did not reveal
+the issue that I am not using timeDiff in there even though it is a parameter... (My home environment seems to heavily
+affect my concentration.)
+
+The method now uses di instead of vi with di being a distance calculated from speed x time (vi x dt). With a time of
+0.5 second another moveCube is generated and tested to be as expected.
+
+Next a test case for handleIntersection. Using just a movement in x direction with vx=2 dx=1. The cubes are of
+size 1x1x1. The first cube is at (0, 0, 0) and the second at (2, 0, 0)::
+
+    |cube1|<--dx-->|cube2| //initial position
+    |----------------------------------------> vx = 2 //original speed vector
+    |------> vxnew = 1 //truncate the speed vector
+            |cube1||cube2| //final position
+
+The first cube should be positioned at (1, 0, 0) after the move.
+
+While adding a test for a case were the vector should not change I noticed something was wrong::
+
+    Both are 1x1x1 cubes. Cube1 is at (1,0,0), Cube2 is at (2,0,0). Cube2 should be moved for 0.5 seconds with a speed
+    of 1 in the x direction. Now calling the handleIntersection method should result in no change in the vector. But
+    inserting the values:
+
+        if (vi >= MATH_ACCURACY) {
+        double di = 2 + 0.5*1 - 1 = 1.5
+        if (di > 0) true
+            velocity.set(i, 1 - 1.5 / 0.5);
+
+This results in a negative velocity of -2 even though it should be positive. This leads to the position of Cube2 being
+0 after an update. This is also the error message when running the code.
+
+As a quick test I decided to stop the movement in the direction completely if the intersection in that direction occurs.
+Due to the slow movement speed it is approximately okay. The issue becomes clear when looking at the behaviour depending
+on which edge of the cube hits the wall. With an angle so that it has to move left along the wall it continues moving
+without moving through the wall. When it would have to continue move right it stops.
+
+The major issue is the angle of the object.
+
+Pen and paper
+-------------
+
+One of the issues found in the last session is that the angle of the cube has a major influence on its behaviour.
+As drawing on the screen takes more time than on paper, I will take a break from the screen and use a block to
+calculate the intersection with angles and find a correct handling for the intersection. The cube should
+move along the wall as long as the movement vector allows for it. I will start with the two dimensional
+(x and z) collision with angles and then continue with adding the y dimension allowing to handle slopes.
+
+After some doodling I though about testing the effects of changing the moveCube to only use the dimension of the
+speed that is currently processed, as I handle dimension independently.
+
+After all not being exactly what I wanted, I decided to use the edges of the cube again including the rotation.
+For now I have a method to calculate the intersection for two lines in two dimensions. The goal of that approach
+is to find the shortest of the vectors to the intersection points from all edges of the cube. (I will explain it
+better later when all is ready.)

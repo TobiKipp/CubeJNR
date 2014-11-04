@@ -196,5 +196,38 @@ public class CubeTest {
         Cube expectedMoveCube = new Cube(new Vector3(0.0, -1.0, 0.0), new Vector3(2.0, 2.0, 1.0), new Vector3(10.0, 20.0, 30.0), "white");
         Cube moveCube = cube.generateMoveCube(1.0);
         assertTrue(expectedMoveCube.similar(moveCube));
+        moveCube = cube.generateMoveCube(0.5);
+        //Position (0, 0, 0) with length (1, 1, 1) extended by (0.5, -0.5, 0.0) results in (0, -0.5, 0) with length (1.5, 1.5, 1)
+        expectedMoveCube = new Cube(new Vector3(0.0, -0.5, 0.0), new Vector3(1.5, 1.5, 1.0), new Vector3(10.0, 20.0, 30.0), "white");
+        assertTrue(expectedMoveCube.similar(moveCube));
     }
+
+    @Test
+    public void testHandleIntersection(){
+        Cube cube1 = new Cube(new Vector3(), new Vector3(1.0, 1.0, 1.0), "white");
+        Cube cube2 = new Cube(new Vector3(2.0, 0.0, 0.0), new Vector3(1.0, 1.0, 1.0), "white");
+        cube1.setVelocity(new Vector3(1.0, 0.0, 0.0));
+        cube1.handleIntersection(cube2, cube1.generateMoveCube(1.0), 1.0);
+        cube1.update(1.0);
+        assertEquals(1.0, cube1.getPosition(0), 1E-10);
+        assertEquals(1.0, cube1.getVelocity(0), 1E-10);
+        //Moving cube2 to the left should not change the position.
+        cube2.setVelocity(new Vector3(-100.0, 0.0, 0.0));
+        cube2.handleIntersection(cube1, cube2.generateMoveCube(1.0), 1.0);
+        cube2.update(1.0);
+        assertEquals(2.0, cube2.getPosition(0), 1E-10);
+        assertEquals(0.0, cube2.getVelocity(0), 1E-10);
+        //Now move cube2 for half a second to the right with vx = 1.0. Handle intersection should
+        //not change anything.
+
+
+        cube2.setVelocity(new Vector3(1.0, 0.0, 0.0));
+        cube2.handleIntersection(cube1, cube2.generateMoveCube(0.5), 0.5);
+        System.out.println(cube2);
+        cube2.update(0.5);
+        System.out.println(cube2);
+        assertEquals(2.5, cube2.getPosition(0), 1E-10);
+        assertEquals(1.0, cube2.getVelocity(0), 1E-10);
+    }
+
 }

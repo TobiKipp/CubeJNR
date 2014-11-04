@@ -220,7 +220,15 @@ public class Cube {
     }
 
     public Vector3 getVelocity() {
-        return velocity;
+        return this.velocity;
+    }
+
+    public double getVelocity(int dimension) {
+        return this.velocity.get(dimension);
+    }
+
+    public double getVelocity(String dimension) {
+        return this.velocity.get(dimension);
     }
 
     public void setVelocity(Vector3 velocity) {
@@ -247,12 +255,15 @@ public class Cube {
         end.add(this.size);
         return end;
     }
+
     public double getEnd(String dimension) {
-       return this.getEnd().get(dimension);
+        return this.getEnd().get(dimension);
     }
+
     public double getEnd(int dimension) {
         return this.getEnd().get(dimension);
     }
+
     /**
      * Prepares the movement before collision detection, by rotating the cube
      * and setting an initial velocity.
@@ -273,33 +284,42 @@ public class Cube {
         return new Cube(this.position.copy(), this.size.copy(), this.angle.copy(), this.velocity.copy(), this.color);
     }
 
-    public void handleIntersection(Cube otherCube, Cube moveCube) {
-        Vector3 startMoveCube = moveCube.getPosition();
-        Vector3 endMoveCube = moveCube.getEnd();
-        System.out.println(velocity.toString());
+    public void handleIntersection(Cube otherCube, Cube moveCube, double timeDiff) {
         for (int i = 0; i < 3; i++) {
+            Cube moveCubeI = this.generateMoveCube(i, timeDiff);
             double vi = velocity.get(i);
             if (vi >= MATH_ACCURACY) {
                 //vi is positive and in the step before cube and levelCube did not intersect.
                 //If the end of the cube would be larger then the position of the levelCube after moving
                 //(endold--wall-->endnew) the velocity has to be truncated such that it does not collide
                 //(endold-->endnew wall).
-                double di = moveCube.getEnd(i) - otherCube.getPosition(i);
-                if (di > 0) {
-                    velocity.set(i, vi - di);
+                double di = moveCubeI.getEnd(i) - otherCube.getPosition(i);
+                if (di >= 0) {
+                    velocity.set(i, 0);
                 }
+/*
+                double viNew = vi - (di / timeDiff);
+                if (viNew >= 0) {
+                    velocity.set(i, viNew - 0.01);
+                }
+                */
             } else if (vi <= -MATH_ACCURACY) {
                 //posnew <--wall--posold  => wall posnew <-- posold
                 //For posnew < wall => wall-posnew > 0, with vi being negative the difference has to be added to
                 //neutralize the velocity.
-                double di = otherCube.getEnd(i) - moveCube.getPosition(i);
-                if (di > 0) {
-                    velocity.set(i, vi + di);
+                double di = otherCube.getEnd(i) - moveCubeI.getPosition(i);
+                double viNew = vi + (di / timeDiff);
+                if (di <= 0) {
+                    velocity.set(i, 0);
                 }
+                /*
+                if (viNew <= 0) {
+
+                    velocity.set(i, viNew + 0.01);
+                }
+                */
             }
         }
-        System.out.println(velocity.toString());
-        System.out.println();
     }
 
     /**
@@ -315,12 +335,31 @@ public class Cube {
         Vector3 posAdd = new Vector3();
         Vector3 sizeAdd = new Vector3();
         for (int i = 0; i < 3; i++) {
-            double vi = velocity.get(i);
-            if (vi > 0) sizeAdd.set(i, vi);
-            else{
-                sizeAdd.set(i, -vi);
-                posAdd.set(i, vi);
+            double di = velocity.get(i) * timeDiff;//To get a distance and not a speed vector multiply with timeDiff.
+            if (di > 0) sizeAdd.set(i, di);
+            else {
+                sizeAdd.set(i, -di);
+                posAdd.set(i, di);
             }
+        }
+
+        moveCube.getPosition().add(posAdd);
+        moveCube.getSize().add(sizeAdd);
+        return moveCube;
+    }
+
+    public Cube generateMoveCube(int dimension, double timeDiff) {
+        Cube moveCube = this.copy();
+        //negative velocity is added (which is subtracted the absolute) from the position and the size must be adjusted,
+        //positive is only added to the size.
+        Vector3 posAdd = new Vector3();
+        Vector3 sizeAdd = new Vector3();
+
+        double di = velocity.get(dimension) * timeDiff;//To get a distance and not a speed vector multiply with timeDiff.
+        if (di > 0) sizeAdd.set(dimension, di);
+        else {
+            sizeAdd.set(dimension, -di);
+            posAdd.set(dimension, di);
         }
 
         moveCube.getPosition().add(posAdd);
@@ -350,7 +389,7 @@ public class Cube {
 
     }
 
-    public String toString(){
+    public String toString() {
         return ("Position:" + this.position.toString() + ", Size:" + this.size.toString() + ", Angle:" +
                 this.angle.toString());
     }
